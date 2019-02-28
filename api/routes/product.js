@@ -8,7 +8,7 @@ router.get('/', (req,res,next) =>{
     .then(product => {
         res.json({
             count : product.length,
-            product : product
+            products : product
             
         })
     })

@@ -1,3 +1,4 @@
+require('dotenv').config()
 const express = require('express')
 const UserModel = require('../models/users_model')
 const router = express.Router()
@@ -96,43 +97,43 @@ router.post('/register', (req,res,next) => {
 })
 
 // Kiểm tra login
-router.post('/login', (req,res,next) => {
-    let email = req.body.email
-    let password = req.body.password
-    const user = {
-        email : email
+router.post('/login', (req, res, next) => {
+    let password = req.body.password;
+    let email = req.body.email;
+    var data;
+    // console.log(password ? true : false + ' - ' + email ? true : false)
+    if(email && password) {
+        data = {
+            email: email,
+        }
+        UserModel.findOne(data)
+        .then(user => {
+            if (!user) {
+                res.status(401).json({
+                    message: 'Email does not exist',
+                });
+            }
+            return bcrypt.compare(password, user.password);
+        })
+        .then(samePassword => {
+            if(!samePassword) {
+                res.status(401).json({
+                    message: 'Incorrect email or password',
+                });
+            }
+            jwt.sign({ user: { email: email }}, process.env.SECRET_KEY, { expiresIn: "7d" }, (err, token) => {
+                res.status(200).json({
+                    message: 'Login successful',
+                    token: token
+                });
+            })
+        })
+        .catch(err => console.log(err))
+    } else {
+        res.status(401).json({
+            message: 'Email and password cannot be empty'
+        });
     }
-    if(email && password){
-        UserModel.findOne(user)
-            .exec()
-            .then(name => {
-                console.log(name);
-                if(!name){
-                    res.status(401).json({
-                        msg : false,
-                    })
-                } 
-                return bcrypt.compare(password, name.password);
-            })
-            .then(samePassword => {
-                if(samePassword){
-                    jwt.sign({user : {email}}, process.env.SECRET_KEY , { expiresIn: '30s' }, (err, token) => {
-                        res.status(200).json({
-                        token,
-                        msg : true
-                        });
-                    });
-                }else{
-                    res.status(401).json({
-                        msg : false,
-                    })
-                }
-            })
-            .catch(err =>{
-                console.log(err);
-            })
-    }
-    
 })
 
 // Update User
