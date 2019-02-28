@@ -170,6 +170,21 @@ router.delete('/:userId',verifyToken, (req,res,next) =>{
     })
 })
 
+router.post('/verify', (req, res, next) => {
+    const token = req.body.access_token
+    jwt.verify(token, process.env.SECRET_KEY, function(err, data) {
+        if(data){
+            res.status(200).json({
+                live: true
+            })
+        } else {
+            res.status(200).json({
+                live: false
+            })
+        }
+    })
+})
+
 function verifyToken (req, res, next) {
     const bearerHeader = req.headers['authorization']
     if(typeof bearerHeader !== 'undefined'){

@@ -1,5 +1,6 @@
 const express = require('express')
 const router = express.Router()
+const jwt = require('jsonwebtoken')
 const productModel = require('../models/product_model')
 
 // Get all Product
@@ -16,15 +17,22 @@ router.get('/', (req,res,next) =>{
         console.log(err);
     })
 })
-// Get one product with params price
-router.get('/:price', (req,res,next) => {
-    let price = req.params.price
-    productModel.findOne({price:price})
+// Get one product with params productId
+router.get('/:productId', (req,res,next) => {
+    let productId = req.params.productId
+    productModel.findOne({_id:productId})
     .exec()
-    .then(price => {
-        res.json({
-            price : price
-        })
+    .then(product => {
+        if(product){
+            res.json({
+                product
+            }) 
+        } else {
+            res.json({
+                message: "Can not find this id product"
+            }) 
+        }
+        
     })
     .catch(err => {
         console.log(err);
@@ -62,11 +70,15 @@ router.post('/create',verifyToken, (req,res,next) =>{
 // Update Product
 router.patch('/:productId',verifyToken, (req,res,next) => {
     const id = req.params.productId;
-    const updateOps = {};
-    for (const ops of req.body){
-        updateOps[ops.propsName] = ops.value;
+    const input = req.body;
+    // for (const ops in Object.keys(updateOps)) {
+    //     // updateOps[ops.propsName] = ops.value;
+    //     console.log(ops, updateOps[ops]);
+    // }
+    for (const key of Object.keys(input)){
+
     }
-    productModel.update({_id : id}, {$set : updateOps})
+    productModel.update({_id : id}, {$set : input})
     .exec()
     .then(result => {
         res.json({
@@ -98,7 +110,15 @@ function verifyToken (req, res, next) {
         const bearer = bearerHeader.split(' ')
         const bearerToken = bearer[1]
         req.token = bearerToken
-        next()
+        jwt.verify(req.token, process.env.SECRET_KEY, function(err, data) {
+            if(data){
+                next()
+            } else {
+                res.status(403).json({
+                    message: 'Authorization was expire'
+                })
+            }
+        })
     }
     else{
         res.status(403).json({
