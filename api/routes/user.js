@@ -9,10 +9,10 @@ const bcrypt = require('bcrypt')
 router.get('/', (req, res, next)=>{
     UserModel.find()
     .exec()
-    .then((user) => {
+    .then((users) => {
         res.json({
-            count : user.length,
-            user : user
+            count : users.length,
+            users : users,
         })
     })
     .catch(err => {
