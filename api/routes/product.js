@@ -1,6 +1,7 @@
 const express = require('express')
 const router = express.Router()
 const jwt = require('jsonwebtoken')
+const mongoose = require('mongoose')
 const productModel = require('../models/product_model')
 
 // Get all Product
@@ -50,6 +51,7 @@ router.post('/create',verifyToken, (req,res,next) =>{
     let count = req.body.count
     let total = req.body.total
     const NewProduct = new productModel({
+        _id: new mongoose.Types.ObjectId(),
         name,
         price,
         desc,
@@ -78,7 +80,7 @@ router.patch('/:productId',verifyToken, (req,res,next) => {
     for (const key of Object.keys(input)){
 
     }
-    productModel.update({_id : id}, {$set : input})
+    productModel.updateOne({_id : id}, {$set : input})
     .exec()
     .then(result => {
         res.json({

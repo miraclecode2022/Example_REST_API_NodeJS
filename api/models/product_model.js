@@ -5,7 +5,6 @@ const productSchema = mongoose.Schema({
     name: {
         type: String,
         required: [true, 'Name product cannot blank'],
-        unique : true
     },
     price: {
         type: Number,
