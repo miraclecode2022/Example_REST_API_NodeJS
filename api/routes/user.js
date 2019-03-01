@@ -4,6 +4,7 @@ const UserModel = require('../models/users_model')
 const router = express.Router()
 const jwt = require('jsonwebtoken')
 const bcrypt = require('bcrypt')
+const mongoose = require('mongoose')
 
 // Get All User on DB
 router.get('/', (req, res, next)=>{
@@ -12,7 +13,7 @@ router.get('/', (req, res, next)=>{
     .then((users) => {
         res.json({
             count : users.length,
-            users : users,
+            users : users
         })
     })
     .catch(err => {
@@ -21,14 +22,20 @@ router.get('/', (req, res, next)=>{
 })  
 
 // Get one user with params name
-router.get('/:name', (req,res,next) => {
-    let name = req.params.name
-    UserModel.findOne({name:name})
+router.get('/:userId', (req,res,next) => {
+    let userId = req.params.userId
+    UserModel.findOne({ _id:userId})
     .exec()
-    .then(name => {
-        res.json({
-            name : name
-        })
+    .then(user => {
+        if(user){
+            res.json({
+                user
+            }) 
+        } else {
+            res.json({
+                message: "Can not find this id user"
+            }) 
+        }
     })
     .catch(err => {
         console.log(err);
@@ -40,20 +47,19 @@ router.post('/register', (req,res,next) => {
     let name = req.body.name
     let email = req.body.email
     let password = req.body.password
-    let password2 = req.body.password2
     
     // Check Require fields
-    if(!name | !email | !password | !password2){
+    if(!name | !email | !password){
         res.json({
             msg : false
         })
     }
     // Check password and password2 is match
-    if(password !== password2){
-        res.json({
-            msg : false
-        })
-    }
+    // if(password !== password2){
+    //     res.json({
+    //         msg : false
+    //     })
+    // }
     // Check length password
     if(password.length < 6){
         res.json({
@@ -73,6 +79,7 @@ router.post('/register', (req,res,next) => {
             }else{
                 // không thì tạo mới
                 const NewUser = new UserModel({
+                    _id: new mongoose.Types.ObjectId(),
                     name,
                     email,
                     password
@@ -89,7 +96,9 @@ router.post('/register', (req,res,next) => {
                             msg : true
                         })
                     })
-                    .catch(err => console.log(err))
+                    .catch(err => res.json({
+                        msg : "Is Not Work!"
+                    }))
                 }))
             }
         })
@@ -139,15 +148,15 @@ router.post('/login', (req, res, next) => {
 // Update User
 router.patch("/:userId", verifyToken, (req,res,next) =>{
     let id = req.params.userId
-    const updateOps = {};
-    for (const ops of req.body){
-        updateOps[ops.propsName] = ops.value;
+    const input = req.body;
+    for (const key of Object.keys(input)){
+
     }
-    UserModel.update({ _id : id }, {$set: updateOps } )
+    UserModel.updateOne({ _id : id }, {$set: input } )
     .exec()
     .then(result => {
         res.json({
-            msg : "Updated User"
+            msg : "Updated User Success"
         })
     })
     .catch(err => {

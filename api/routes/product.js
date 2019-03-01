@@ -73,10 +73,6 @@ router.post('/create',verifyToken, (req,res,next) =>{
 router.patch('/:productId',verifyToken, (req,res,next) => {
     const id = req.params.productId;
     const input = req.body;
-    // for (const ops in Object.keys(updateOps)) {
-    //     // updateOps[ops.propsName] = ops.value;
-    //     console.log(ops, updateOps[ops]);
-    // }
     for (const key of Object.keys(input)){
 
     }
