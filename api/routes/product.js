@@ -4,7 +4,6 @@ const jwt = require('jsonwebtoken')
 const mongoose = require('mongoose')
 const productModel = require('../models/product_model')
 const multer = require("multer")
-const os = require("os");
 const storage = multer.diskStorage({
     destination : function(req,file,cb){
         cb(null, './uploads/');
@@ -67,7 +66,7 @@ router.get('/:productId', (req,res,next) => {
 })
 
 // Tạo mới product 
-router.post('/create',upload.single('image') , (req,res,next) =>{
+router.post('/create', verifyToken ,upload.single('image') , (req,res,next) =>{
     let name = req.body.name
     let price = req.body.price
     let desc = req.body.desc
@@ -83,7 +82,7 @@ router.post('/create',upload.single('image') , (req,res,next) =>{
         price,
         desc,
         type,
-        image: fullUrl+"\\"+image,
+        image: fullUrl+"\/"+image,
         inCard,
         count,
         total
@@ -91,23 +90,35 @@ router.post('/create',upload.single('image') , (req,res,next) =>{
     NewProduct.save()
     .then(product => {
         res.json({
+            status: true,
+            message: "Created Product Successful",
             product
         })
     })
 })
 
 // Update Product
-router.patch('/:productId',verifyToken, (req,res,next) => {
+router.patch('/:productId',verifyToken, upload.single('image') , (req,res,next) => {
     const id = req.params.productId;
     const input = req.body;
+    let file = req.file.path;
+    const fullUrl = req.protocol + '://' + req.get('host');
     for (const key of Object.keys(input)){
-
+        
     }
     productModel.updateOne({_id : id}, {$set : input})
     .exec()
     .then(result => {
-        res.json({
-            msg : "Update done"
+        productModel.updateOne({_id : id}, {$set : { image: fullUrl+"\/"+file }})
+        .exec()
+        .then(result => {
+            res.json({
+                status: true,
+                message: "Updated Product Successful",
+            })
+        })
+        .catch(err =>{
+            console.log(err);
         })
     })
     .catch(err =>{
