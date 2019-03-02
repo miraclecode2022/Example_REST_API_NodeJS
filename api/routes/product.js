@@ -4,6 +4,7 @@ const jwt = require('jsonwebtoken')
 const mongoose = require('mongoose')
 const productModel = require('../models/product_model')
 const multer = require("multer")
+const os = require("os");
 const storage = multer.diskStorage({
     destination : function(req,file,cb){
         cb(null, './uploads/');
@@ -75,13 +76,14 @@ router.post('/create',upload.single('image') , (req,res,next) =>{
     let inCard = req.body.inCard
     let count = req.body.count
     let total = req.body.total
+    const fullUrl = req.protocol + '://' + req.get('host');
     const NewProduct = new productModel({
         _id: new mongoose.Types.ObjectId(),
         name,
         price,
         desc,
         type,
-        image,
+        image: fullUrl+"\\"+image,
         inCard,
         count,
         total
@@ -89,7 +91,7 @@ router.post('/create',upload.single('image') , (req,res,next) =>{
     NewProduct.save()
     .then(product => {
         res.json({
-            msg : true
+            product
         })
     })
 })

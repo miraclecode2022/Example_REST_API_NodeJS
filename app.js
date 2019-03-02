@@ -5,7 +5,7 @@ const productRouter = require('./api/routes/product')
 const userRouter = require('./api/routes/user')
 
 
-app.use(express.static('uploads'))
+app.use('/uploads', express.static('uploads'))
 // format data to json
 const bodyParser = require('body-parser')
 app.use(bodyParser.urlencoded({ 
