@@ -51,7 +51,8 @@ router.post('/register', (req,res,next) => {
     // Check Require fields
     if(!name | !email | !password){
         res.json({
-            msg : false
+            status : false,
+            message: "Fields can not blank"
         })
     }
     // Check password and password2 is match
@@ -63,7 +64,8 @@ router.post('/register', (req,res,next) => {
     // Check length password
     if(password.length < 6){
         res.json({
-            msg : false
+            status : false,
+            message: "Password must be more than 6 characters"
         })
     }
     else {
@@ -74,7 +76,7 @@ router.post('/register', (req,res,next) => {
             // nếu đã có thì báo
             if(user){
                 res.json({
-                    msg : false
+                    status : false
                 })
             }else{
                 // không thì tạo mới
@@ -93,12 +95,11 @@ router.post('/register', (req,res,next) => {
                     NewUser.save()
                     .then(user =>{
                         res.json({
-                            msg : true
+                            status : true,
+                            message: "Create was successful"
                         })
                     })
-                    .catch(err => res.json({
-                        msg : "Is Not Work!"
-                    }))
+                    .catch(err => console.log(err))
                 }))
             }
         })
