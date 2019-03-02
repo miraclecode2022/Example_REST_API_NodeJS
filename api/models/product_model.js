@@ -20,7 +20,7 @@ const productSchema = mongoose.Schema({
     }, 
     image: { 
         type: String,
-        default: './imgs/noimage.jpg'
+        required : true
     },
     inCart: {
         type: Boolean,

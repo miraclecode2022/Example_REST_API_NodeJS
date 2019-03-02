@@ -4,6 +4,8 @@ const app = express()
 const productRouter = require('./api/routes/product')
 const userRouter = require('./api/routes/user')
 
+
+app.use(express.static('uploads'))
 // format data to json
 const bodyParser = require('body-parser')
 app.use(bodyParser.urlencoded({ 
