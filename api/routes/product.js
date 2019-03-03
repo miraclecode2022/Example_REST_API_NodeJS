@@ -4,6 +4,7 @@ const jwt = require('jsonwebtoken')
 const mongoose = require('mongoose')
 const productModel = require('../models/product_model')
 const multer = require("multer")
+const cloudinary = require('cloudinary')
 const storage = multer.diskStorage({
     destination : function(req,file,cb){
         cb(null, './uploads/');
@@ -12,6 +13,12 @@ const storage = multer.diskStorage({
         cb(null, new Date().getTime() + "-" + file.originalname);
     }
 })
+
+cloudinary.config({ 
+    cloud_name: 'hqqovvbty', 
+    api_key: '587633626684767', 
+    api_secret: '1-FD6hS8giFV5MKhLRj9zpzlJvM' 
+});
 
 const fileFilter = (req,file, cb) => {
     if (file.mimetype === 'image/jpeg' || file.mimetype === 'image/png' || file.mimetype === 'image/jpg'){
@@ -66,7 +73,7 @@ router.get('/:productId', (req,res,next) => {
 })
 
 // Tạo mới product 
-router.post('/create', verifyToken ,upload.single('image') , (req,res,next) =>{
+router.post('/create', verifyToken, upload.single('image') , (req,res,next) =>{
     let name = req.body.name
     let price = req.body.price
     let desc = req.body.desc
@@ -75,24 +82,25 @@ router.post('/create', verifyToken ,upload.single('image') , (req,res,next) =>{
     let inCard = req.body.inCard
     let count = req.body.count
     let total = req.body.total
-    const fullUrl = req.protocol + '://' + req.get('host');
-    const NewProduct = new productModel({
-        _id: new mongoose.Types.ObjectId(),
-        name,
-        price,
-        desc,
-        type,
-        image: fullUrl+"\/"+image,
-        inCard,
-        count,
-        total
-    });
-    NewProduct.save()
-    .then(product => {
-        res.json({
-            status: true,
-            message: "Created Product Successful",
-            product
+    cloudinary.uploader.upload(image, (result) => {
+        const NewProduct = new productModel({
+            _id: new mongoose.Types.ObjectId(),
+            name,
+            price,
+            desc,
+            type,
+            image: result.url,
+            inCard,
+            count,
+            total
+        });
+        NewProduct.save()
+        .then(product => {
+            res.json({
+                status: true,
+                message: "Created Product Successful",
+                product
+            })
         })
     })
 })
@@ -102,23 +110,24 @@ router.patch('/:productId',verifyToken, upload.single('image') , (req,res,next) 
     const id = req.params.productId;
     const input = req.body;
     let file = req.file.path;
-    const fullUrl = req.protocol + '://' + req.get('host');
     for (const key of Object.keys(input)){
         
     }
     productModel.updateOne({_id : id}, {$set : input})
     .exec()
     .then(result => {
-        productModel.updateOne({_id : id}, {$set : { image: fullUrl+"\/"+file }})
-        .exec()
-        .then(result => {
-            res.json({
-                status: true,
-                message: "Updated Product Successful",
+        cloudinary.uploader.upload(image, (result) => {
+            productModel.updateOne({_id : id}, {$set : { image: result.url }})
+            .exec()
+            .then(result => {
+                res.json({
+                    status: true,
+                    message: "Updated Product Successful",
+                })
             })
-        })
-        .catch(err =>{
-            console.log(err);
+            .catch(err =>{
+                console.log(err);
+            })
         })
     })
     .catch(err =>{
