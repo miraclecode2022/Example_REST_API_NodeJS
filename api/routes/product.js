@@ -89,7 +89,7 @@ router.post('/create', verifyToken, upload.single('image') , (req,res,next) =>{
             price,
             desc,
             type,
-            image: result.url,
+            image: result.secure_url,
             inCard,
             count,
             total
@@ -117,7 +117,7 @@ router.patch('/:productId',verifyToken, upload.single('image') , (req,res,next) 
     .exec()
     .then(result => {
         cloudinary.uploader.upload(file, (result) => {
-            productModel.updateOne({_id : id}, {$set : { image: result.url }})
+            productModel.updateOne({_id : id}, {$set : { image: result.secure_url }})
             .exec()
             .then(result => {
                 res.json({
