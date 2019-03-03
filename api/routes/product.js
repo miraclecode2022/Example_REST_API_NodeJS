@@ -116,7 +116,7 @@ router.patch('/:productId',verifyToken, upload.single('image') , (req,res,next) 
     productModel.updateOne({_id : id}, {$set : input})
     .exec()
     .then(result => {
-        cloudinary.uploader.upload(image, (result) => {
+        cloudinary.uploader.upload(file, (result) => {
             productModel.updateOne({_id : id}, {$set : { image: result.url }})
             .exec()
             .then(result => {
