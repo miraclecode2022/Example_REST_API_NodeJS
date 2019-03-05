@@ -3,6 +3,7 @@ const express = require('express')
 const app = express()
 const productRouter = require('./api/routes/product')
 const userRouter = require('./api/routes/user')
+const orderRouter = require('./api/routes/order')
 
 
 app.use('/uploads', express.static('uploads'))
@@ -29,6 +30,7 @@ app.use((req, res, next) => {
 
 app.use('/products', productRouter)
 app.use('/users', userRouter)
+app.use('/order', orderRouter)
 
 
 // Tạo message khi api lỗi

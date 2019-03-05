@@ -19,6 +19,9 @@ const UserSchema = new mongoose.Schema({
     required: true,
     required: [true, 'Password product cannot blank']
   },
+  image:{
+    type: String
+  },
   date: {
     type: Date,
     default: Date.now

@@ -42,7 +42,7 @@ router.get('/', (req,res,next) =>{
     .then(product => {
         res.json({
             count : product.length,
-            products : product
+            product
             
         })
     })
@@ -99,7 +99,7 @@ router.post('/create', verifyToken, upload.single('image') , (req,res,next) =>{
             res.json({
                 status: true,
                 message: "Created Product Successful",
-                product
+                product : product
             })
         })
     })
