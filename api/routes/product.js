@@ -41,7 +41,7 @@ router.get('/', (req,res,next) =>{
     productModel.find()
     .then(products => {
         res.json({
-            count : product.length,
+            count : products.length,
             products
             
         })
