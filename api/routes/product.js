@@ -116,19 +116,27 @@ router.patch('/:productId',verifyToken, upload.single('image') , (req,res,next) 
     productModel.updateOne({_id : id}, {$set : input})
     .exec()
     .then(result => {
-        cloudinary.uploader.upload(file, (result) => {
-            productModel.updateOne({_id : id}, {$set : { image: result.secure_url }})
-            .exec()
-            .then(result => {
-                res.json({
-                    status: true,
-                    message: "Updated Product Successful",
+        if(file){
+            cloudinary.uploader.upload(file, (result) => {
+                productModel.updateOne({_id : id}, {$set : { image: result.secure_url }})
+                .exec()
+                .then(result => {
+                    res.json({
+                        status: true,
+                        message: "Updated Product Successful",
+                    })
+                })
+                .catch(err =>{
+                    console.log(err);
                 })
             })
-            .catch(err =>{
-                console.log(err);
+        }
+        else {
+            res.json({
+                status: true,
+                message: "Updated Product Successful",
             })
-        })
+        }
     })
     .catch(err =>{
         console.log(err);
