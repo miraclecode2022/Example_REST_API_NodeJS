@@ -5,7 +5,38 @@ const router = express.Router()
 const jwt = require('jsonwebtoken')
 const bcrypt = require('bcrypt')
 const mongoose = require('mongoose')
+const multer = require("multer")
+const cloudinary = require('cloudinary')
 
+const storage = multer.diskStorage({
+    destination : function(req,file,cb){
+        cb(null, './uploads/');
+    },
+    filename: function(req,file,cb){
+        cb(null, new Date().getTime() + "-" + file.originalname);
+    }
+})
+
+const fileFilter = (req,file, cb) => {
+    if (file.mimetype === 'image/jpeg' || file.mimetype === 'image/png' || file.mimetype === 'image/jpg'){
+        cb(null, true);
+    } else {
+        cb(null, false)
+    }
+}
+
+const upload = multer({
+    storage: storage, 
+    limits : {
+    fileSize : 1024 * 1024 * 5
+    },
+    fileFilter : fileFilter
+})
+cloudinary.config({ 
+    cloud_name: 'hqqovvbty', 
+    api_key: '587633626684767', 
+    api_secret: '1-FD6hS8giFV5MKhLRj9zpzlJvM' 
+});
 // Get All User on DB
 router.get('/', (req, res, next)=>{
     UserModel.find()
@@ -43,11 +74,11 @@ router.get('/:userId', (req,res,next) => {
 })
 
 // Tạo user
-router.post('/register', (req,res,next) => {
+router.post('/register',upload.single('image'), (req,res,next) => {
     let name = req.body.name
     let email = req.body.email
     let password = req.body.password
-    
+    let image = req.file.path
     // Check Require fields
     if(!name | !email | !password){
         res.json({
@@ -80,27 +111,30 @@ router.post('/register', (req,res,next) => {
                 })
             }else{
                 // không thì tạo mới
-                const NewUser = new UserModel({
-                    _id: new mongoose.Types.ObjectId(),
-                    name,
-                    email,
-                    password
-                });
-                // mã hóa password
-                bcrypt.genSalt(10, (err,salt) => bcrypt.hash(NewUser.password, salt, (err,hash) => {
-                    if(err) throw err;
-                    // Set password thành mã hóa
-                    NewUser.password = hash;
-                    // Sau đó là lưu
-                    NewUser.save()
-                    .then(user =>{
-                        res.json({
-                            status : true,
-                            message: "Create was successful"
+                cloudinary.uploader.upload(image, (result) => {
+                    const NewUser = new UserModel({
+                        _id: new mongoose.Types.ObjectId(),
+                        name,
+                        email,
+                        password,
+                        image : result.secure_url
+                    });
+                    // mã hóa password
+                    bcrypt.genSalt(10, (err,salt) => bcrypt.hash(NewUser.password, salt, (err,hash) => {
+                        if(err) throw err;
+                        // Set password thành mã hóa
+                        NewUser.password = hash;
+                        // Sau đó là lưu
+                        NewUser.save()
+                        .then(user =>{
+                            res.json({
+                                status : true,
+                                message: "Create was successful"
+                            })
                         })
-                    })
-                    .catch(err => console.log(err))
-                }))
+                        .catch(err => console.log(err))
+                    }))
+                })
             }
         })
     }
