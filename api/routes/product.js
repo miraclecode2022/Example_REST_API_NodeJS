@@ -138,6 +138,10 @@ router.patch('/:productId',verifyToken, upload.single('image') , (req,res,next) 
             res.json({
                 status: true,
                 message: "Updated Product Successful",
+                body : {
+                    name : result.name,
+                    email : result.email
+                }
             })
         }
     })

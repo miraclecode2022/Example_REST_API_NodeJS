@@ -181,18 +181,40 @@ router.post('/login', (req, res, next) => {
 })
 
 // Update User
-router.patch("/:userId", verifyToken, (req,res,next) =>{
+router.patch("/:userId", upload.single('image') , (req,res,next) =>{
     let id = req.params.userId
     const input = req.body;
     for (const key of Object.keys(input)){
 
     }
+    if(input.image === 'null'){
+        delete input['image']
+    }
     UserModel.updateOne({ _id : id }, {$set: input } )
     .exec()
     .then(result => {
-        res.json({
-            msg : "Updated User Success"
-        })
+        let file = req.file;
+        if(file){
+            cloudinary.uploader.upload(file.path, (result) => {
+                UserModel.updateOne({_id : id}, {$set : { image: result.secure_url}})
+                .exec()
+                .then(result => {
+                    res.json({
+                        status: true,
+                        message: "Updated User Successful",
+                    })
+                })
+                .catch(err =>{
+                    console.log(err);
+                })
+            })
+        }
+        else {
+            res.json({
+                status: true,
+                message: "Updated User Successful",
+            })
+        }
     })
     .catch(err => {
         console.log(err);
