@@ -39,10 +39,10 @@ const upload = multer({
 // Get all Product
 router.get('/', (req,res,next) =>{
     productModel.find()
-    .then(product => {
+    .then(products => {
         res.json({
-            count : product.length,
-            product
+            count : products.length,
+            products
             
         })
     })

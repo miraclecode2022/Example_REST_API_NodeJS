@@ -3,9 +3,47 @@ const mongoose = require('mongoose')
 const orderSchema = mongoose.Schema({
     _id: mongoose.Schema.Types.ObjectId,
 
-    product : { type : mongoose.Schema.Types.ObjectId, ref : 'Product', required : true },
-
-    quantity : { type : Number, default: 1 }
+    customer : {
+        type: {
+            customer: {
+                firstname: {
+                    type: String
+                },
+                lastname: {
+                    type: String
+                },
+                address: {
+                    type: String
+                },
+                city: {
+                    type: String
+                },
+                district: {
+                    type: Number
+                },
+                phone: {
+                    type: Number
+                },
+                email: {
+                    type: String
+                }
+            }
+        }
+    },
+    orders : {
+        type: [{
+            count: {
+                type: Number
+            },
+            total: {
+                type: Number
+            },
+            _id: {
+                type: String
+            }
+        }]
+    },
+    status: { type: Number, default: 0}
     
 }, { versionKey: false })
 

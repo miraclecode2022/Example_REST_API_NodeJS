@@ -49,27 +49,19 @@ router.get('/:orderId', (req,res,next) => {
 
 
 // tạo mới order
-router.post('/create',verifyToken, (req,res,next) =>{
-    productModel.findById(req.body.productId)
-    .then(product => {
-        if(!product){
-            return res.status(404).json({
-                message : "Can't found this Product"
-            })
-        }
-        const order = new orderModel({
-            _id : mongoose.Types.ObjectId(),
-            quantity : req.body.quantity,
-            product : req.body.productId
-        })
-        return order.save()
+router.post('/create', (req,res,next) =>{
+    const order = new orderModel({
+        _id : mongoose.Types.ObjectId(),
+        customer : req.body.customer,
+        orders : req.body.orders
     })
+    order.save()
     .then(result => {
         console.log(result);
         res.status(201).json({
-            type : "POST",
-            message : "Order Stored",
-            Url : "localhost:8080/order/create/" + result._id
+            status: true,
+            message : "Ordered Successful",
+            url : "localhost:8080/order/" + result._id
             })
     })
     .catch(err => {
@@ -93,6 +85,17 @@ router.delete('/:orderId',verifyToken, (req,res,next) => {
     .catch(err => {
         console.log(err)
     })
+})
+
+// API crate token request Form
+router.get('/token/rest', (req, res, next) => {
+    jwt.sign({
+        data: 'coffeecode'
+    }, 'coffeecode', { expiresIn: "60" }, (err, data) => {
+        res.json({
+            token: data
+        })
+    });
 })
 
 function verifyToken (req, res, next) {
