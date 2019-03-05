@@ -109,15 +109,18 @@ router.post('/create', verifyToken, upload.single('image') , (req,res,next) =>{
 router.patch('/:productId',verifyToken, upload.single('image') , (req,res,next) => {
     const id = req.params.productId;
     const input = req.body;
-    let file = req.file.path;
     for (const key of Object.keys(input)){
         
+    }
+    if(input.image === 'null'){
+        delete input['image']
     }
     productModel.updateOne({_id : id}, {$set : input})
     .exec()
     .then(result => {
+        let file = req.file;
         if(file){
-            cloudinary.uploader.upload(file, (result) => {
+            cloudinary.uploader.upload(file.path, (result) => {
                 productModel.updateOne({_id : id}, {$set : { image: result.secure_url }})
                 .exec()
                 .then(result => {
