@@ -43,7 +43,11 @@ const orderSchema = mongoose.Schema({
             }
         }]
     },
-    status: { type: Number, default: 0}
+    status: { type: Number, default: 0},
+    date : {
+        type: Date,
+        default: Date.now
+    }
     
 }, { versionKey: false })
 

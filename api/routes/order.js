@@ -11,9 +11,12 @@ const orderModel = require('../models/order_model')
 router.get('/', (req,res,next) => {
     orderModel.find()
     .exec()
-    .then(result => {
-        console.log(result);
-        res.status(200).json(result);
+    .then(order => {
+        console.log(order);
+        res.status(200).json({
+            count : order.length,
+            order
+        });
     })
     .catch(err => {
         console.log(err);
@@ -27,15 +30,15 @@ router.get('/', (req,res,next) => {
 router.get('/:orderId', (req,res,next) => {
     orderModel.findById(req.params.orderId)
     .exec()
-    .then(result => {
-        console.log(result);
+    .then(order => {
+        console.log(order);
         res.status(200).json({
             message : "Found It",
             type : "GET BY ID",
-            Url : "localhost:8080/order/" + result._id,
+            Url : "localhost:8080/order/" + order._id,
             Body : {
-                quantity : result.quantity,
-                productId : result.product
+                quantity : order.quantity,
+                productId : order.product
             }
         });
     })
