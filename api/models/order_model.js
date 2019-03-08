@@ -1,4 +1,5 @@
 const mongoose = require('mongoose')
+let dateFormat = require('dateformat')
 
 const orderSchema = mongoose.Schema({
     _id: mongoose.Schema.Types.ObjectId,
@@ -46,7 +47,7 @@ const orderSchema = mongoose.Schema({
     status: { type: Number, default: 0},
     date : {
         type: Date,
-        default: Date.now
+        default: dateFormat( new Date(), "dd-mm-yyyy h:MM:ss")
     }
     
 }, { versionKey: false })
