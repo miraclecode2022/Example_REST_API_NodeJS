@@ -57,7 +57,7 @@ router.post('/create', (req,res,next) =>{
     const order = new orderModel({
         _id : mongoose.Types.ObjectId(),
         customer : req.body.customer,
-        orders : req.body.orders
+        products : req.body.products
     })
     order.save()
     .then(result => {
