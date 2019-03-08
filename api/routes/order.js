@@ -83,7 +83,7 @@ router.delete('/:orderId',verifyToken, (req,res,next) => {
     .exec()
     .then(result => {
         res.json({
-            msg : "Delete"
+            msg : "Delete" 
         })
     })
     .catch(err => {
