@@ -30,7 +30,7 @@ const orderSchema = mongoose.Schema({
             }
         }
     },
-    orders : {
+    products : {
         type: [{
             count: {
                 type: Number
