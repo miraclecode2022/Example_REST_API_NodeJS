@@ -11,11 +11,11 @@ const orderModel = require('../models/order_model')
 router.get('/', (req,res,next) => {
     orderModel.find()
     .exec()
-    .then(order => {
-        console.log(order);
+    .then(orders => {
+        console.log(orders);
         res.status(200).json({
-            count : order.length,
-            order
+            count : orders.length,
+            orders
         });
     })
     .catch(err => {
@@ -38,7 +38,8 @@ router.get('/:orderId', (req,res,next) => {
             Url : "localhost:8080/order/" + order._id,
             Body : {
                 quantity : order.quantity,
-                productId : order.product
+                productId : order.product,
+                order
             }
         });
     })
