@@ -16,8 +16,6 @@ router.get('/', (req,res,next) => {
         res.status(200).json({
             count : orders.length,
             orders,
-            customer : orders.customer,
-            products : orders.products
         });
     })
     .catch(err => {
