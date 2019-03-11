@@ -30,17 +30,10 @@ router.get('/', (req,res,next) => {
 router.get('/:orderId', (req,res,next) => {
     orderModel.findById(req.params.orderId)
     .exec()
-    .then(order => {
+    .then(orders => {
         console.log(order);
         res.status(200).json({
-            message : "Found It",
-            type : "GET BY ID",
-            Url : "localhost:8080/order/" + order._id,
-            Body : {
-                quantity : order.quantity,
-                productId : order.product,
-                order
-            }
+            orders
         });
     })
     .catch(err => {
