@@ -31,9 +31,10 @@ router.get('/:orderId', (req,res,next) => {
     orderModel.findById(req.params.orderId)
     .exec()
     .then(orders => {
-        console.log(order);
         res.status(200).json({
-            orders
+            orders,
+            customer : orders.customer,
+            products : orders.products
         });
     })
     .catch(err => {
