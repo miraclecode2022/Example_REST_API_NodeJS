@@ -47,7 +47,7 @@ const orderSchema = mongoose.Schema({
     status: { type: Number, default: 0},
     date : {
         type: Date,
-        default: dateFormat( new Date(), "dd-mm-yyyy h:MM:ss")
+        default: new Date()
     }
     
 }, { versionKey: false })
