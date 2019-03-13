@@ -41,6 +41,12 @@ const orderSchema = mongoose.Schema({
             },
             _id: {
                 type: String
+            },
+            image: {
+                type: String
+            },
+            name: {
+                type: String
             }
         }]
     },
